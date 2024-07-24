@@ -8,7 +8,7 @@ class CommonUtils:
     def encrypt_password(self, password: str) -> str:
         encrypted_password = self.cipher_suite.encrypt(password.encode('utf-8'))
         return encrypted_password.decode('utf-8')
-
+    
     def decrypt_password(self, encrypted_password: str) -> str:
         decrypted_password = self.cipher_suite.decrypt(encrypted_password.encode('utf-8'))
         return decrypted_password.decode('utf-8')

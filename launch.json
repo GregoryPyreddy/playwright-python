@@ -5,13 +5,9 @@
             "name": "Python: pytest",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/tests/step_defs",
-            "args": [
-                "--no-cov",
-                "--capture=no"
-            ],
-            "console": "integratedTerminal",
-            "justMyCode": false
+            "program": "${workspaceFolder}/path_to_your_test_file.py",
+            "args": ["-m", "pytest", "-s"],
+            "console": "integratedTerminal"
         }
     ]
 }

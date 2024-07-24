@@ -1,0 +1,31 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Run Tests",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/run_tests.py",
+            "args": [
+                "--run-browser", "chromium",
+                "--namespace", "dev02"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
+        {
+            "name": "Debug pytest",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",  // Run pytest module
+            "console": "integratedTerminal",
+            "args": [
+                "-v",                          // Verbose output
+                "-k", "test_TC10001",         // Run tests matching 'test_case_name'
+                "--maxfail=1",                  // Stop after 1 failure
+                "--disable-warnings"            // Disable warnings
+              ]
+          }
+    ]
+}

@@ -1,7 +1,7 @@
 import pytest
 import configparser
 import os
-from playwright.async_api import async_playwright
+from playwright.sync_api import sync_playwright
 
 # Get the directory of the current file (conftest.py)
 current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -13,49 +13,50 @@ config_file = os.path.join(root_dir, "config.ini")
 def pytest_addoption(parser):
     config = configparser.ConfigParser()
     config.read("config.ini")
-    browser_default = config.get("pytest", "browser", fallback="chrome")
-    test_case_default = config.get("pytest", "test_case", fallback="login_test")
     time_out_default = config.get("pytest", "time_out", fallback="10")
     name_space_default = config.get("pytest", "name_space", fallback="dev02")
 
-    parser.addoption("--browser", action="store", default=browser_default, help="Specify the browser")
-    parser.addoption("--test-case", action="store", default=test_case_default, help="Specify the test case")
     parser.addoption("--time-out", action="store", default=time_out_default, help="Specify the timeout in seconds")
     parser.addoption("--name_space", action="store", default=name_space_default, help="Specify the namespace we are running the test")
 
-@pytest.fixture
-async def browser_type(request):
+@pytest.fixture(scope="session")
+def browser_type(request):
     browser = request.config.getoption("--browser")
+    print(browser)
     return browser
 
-@pytest.fixture
-async def test_case(request):
+@pytest.fixture(scope="session")
+def test_case(request):
     test_case = request.config.getoption("--test-case")
     return test_case
 
 @pytest.fixture(scope="session")
 def base_url(request):
     name_space = request.config.getoption("--name_space")
-    url = f"url"
+    url = f"https://odxui.{name_space}.odx-nonprod.o360.cloud/ncc"
     return url
 
 @pytest.fixture(scope="session")
-async def playwright_context(browser_type):
-    async with async_playwright() as p:
-        if browser_type == "chrome":
+def playwright_context(browser_type):
+    if len(browser_type) > 0:
+        browser_type = browser_type[0]
+    else:
+        browser_type = "chromium"
+    with sync_playwright() as p:
+        if browser_type == "chromium":
             browser =p.chromium.launch(headless=False)
         elif browser_type == "firefox":
             browser =p.firefox.launch(headless=False)
         else:
             raise Exception(f"Browser '{browser_type}' is not supported")
         yield browser
-        await browser.close()
+        browser.close()
 
 @pytest.fixture(scope="function")
-async def browser_page(playwright_context):
-    page = await playwright_context.new_page()
+def browser_page(playwright_context):
+    page = playwright_context.new_page()
     yield page
-    await page.close()
+    page.close()
 
 class TestContext:
     def __init__(self, driver, wait):
